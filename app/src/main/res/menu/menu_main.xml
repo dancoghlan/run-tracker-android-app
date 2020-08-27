@@ -1,0 +1,19 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context="com.dancoghlan.androidapp.activity.MainActivity">
+    <item
+            android:orderInCategory="100"
+            android:title="Item" />
+    <item
+            android:id="@+id/action_settings"
+            android:orderInCategory="101"
+            android:title="@string/action_settings"
+            app:showAsAction="never" />
+    <item
+            android:orderInCategory="102"
+            android:title="Item" />
+    <item
+            android:orderInCategory="103"
+            android:title="Item" />
+</menu>

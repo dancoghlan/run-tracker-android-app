@@ -1,0 +1,1 @@
+Rest client: https://stackoverflow.com/questions/29339565/how-do-i-call-rest-api-from-an-android-app

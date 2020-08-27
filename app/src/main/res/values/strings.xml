@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Track My Run</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="date_button_set">Set Date</string>
+
+    <string name="time_set">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="time">Time : </string>
+
+    <string-array name="main_menu_list">
+        <item>Add Run</item>
+        <item>View Runs</item>
+    </string-array>
+
+</resources>
