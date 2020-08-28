@@ -1,8 +1,137 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         tools:context="com.dancoghlan.androidapp.fragment.HomeFragment">
 
+    <!-- Overall Summary Layout -->
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical">
 
-</RelativeLayout>
+        <TextView
+                android:id="@+id/label_summary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="Summary"
+                android:textAlignment="textStart"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@color/Black"
+                android:textStyle="bold" />
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            <!-- Total Runs Layout -->
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                <TextView
+                        android:id="@+id/label_total_runs"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total Runs: "
+                        android:textColor="@color/Gray" />
+
+                <TextView
+                        android:id="@+id/view_total_runs"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:textColor="@color/Black"
+                        android:text="Runs" />
+
+            </LinearLayout>
+
+            <!-- Total Distance Layout -->
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                <TextView
+                        android:id="@+id/label_total_distance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total Distance: "
+                        android:textColor="@color/Gray" />
+
+                <TextView
+                        android:id="@+id/view_total_distance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:textColor="@color/Black"
+                        android:text="Distance" />
+
+            </LinearLayout>
+
+            <!-- Total Time Layout -->
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                <TextView
+                        android:id="@+id/label_total_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total Time: "
+                        android:textColor="@color/Gray" />
+
+                <TextView
+                        android:id="@+id/view_total_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:textColor="@color/Black"
+                        android:text="Time" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+            android:id="@+id/divider_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="15dp"
+            android:background="@color/LightOrange" />
+
+
+
+    <!-- Recent Runs Layout -->
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:orientation="vertical">
+
+        <TextView
+                android:id="@+id/label_recent_runs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Recent Runs"
+                android:textAlignment="textStart"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@color/Black"
+                android:textStyle="bold" />
+
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_recent_runs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+</LinearLayout>

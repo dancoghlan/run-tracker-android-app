@@ -12,16 +12,15 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.tabs.TabLayout;
 
 public class MainActivity extends AppCompatActivity {
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tabLayout = findViewById(R.id.tabLayout);
-        viewPager = findViewById(R.id.viewPager);
+        // Get views
+        TabLayout tabLayout = findViewById(R.id.tabLayout);
+        ViewPager viewPager = findViewById(R.id.viewPager);
 
         // Create tab layout
         final MainActivityTabAdapter adapter = new MainActivityTabAdapter(this, getSupportFragmentManager(), tabLayout.getTabCount());

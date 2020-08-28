@@ -15,7 +15,7 @@ public class RunContextMapper implements Mapper<RunContext> {
         String description = cursor.getString(2);
         LocalDate date = null;
         String time = cursor.getString(4);
-        double distance = cursor.getDouble(4);
+        double distance = cursor.getDouble(5);
         String pace = cursor.getString(6);
 
         return new RunContext.Builder()

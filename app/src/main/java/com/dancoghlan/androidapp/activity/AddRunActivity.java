@@ -1,7 +1,9 @@
 package com.dancoghlan.androidapp.activity;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,15 +16,15 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.dancoghlan.androidapp.R;
-import com.dancoghlan.androidapp.dao.RunDao;
-import com.dancoghlan.androidapp.dao.SQLiteRunDao;
 import com.dancoghlan.androidapp.database.DBManager;
-import com.dancoghlan.androidapp.model.RunContext;
 import com.dancoghlan.androidapp.database.SQLiteDBManager;
-import com.dancoghlan.androidapp.service.RunService;
-import com.dancoghlan.androidapp.service.RunServiceImpl;
-import com.dancoghlan.androidapp.view.MyTimePickerDialogWithSeconds;
+import com.dancoghlan.androidapp.database.dao.RunPersistenceDao;
+import com.dancoghlan.androidapp.database.dao.SQLiteRunPersistenceDao;
+import com.dancoghlan.androidapp.database.service.RunPersistenceService;
+import com.dancoghlan.androidapp.database.service.RunPersistenceServiceImpl;
+import com.dancoghlan.androidapp.model.RunContext;
 import com.dancoghlan.androidapp.view.MyTimePickerDialogNoSeconds;
+import com.dancoghlan.androidapp.view.MyTimePickerDialogWithSeconds;
 import com.dancoghlan.androidapp.view.TimePicker;
 import com.dancoghlan.androidapp.view.TimePickerWithSeconds;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -35,14 +37,14 @@ import java.util.Calendar;
 import java.util.List;
 
 public class AddRunActivity extends AppCompatActivity {
+    private RunPersistenceService runPersistenceService;
+    private DBManager dbManager;
     private TextView dateView;
     private Button timeButton, distanceButton, paceButton;
     private int day, month, year, hourOfDay, minute, second;
     private LocalDate date;
     private String time, pace;
     private double distance;
-    private RunService runService;
-    private DBManager dbManager;
 
     private MyTimePickerDialogWithSeconds.OnTimeSetListener timeSetListener = new MyTimePickerDialogWithSeconds.OnTimeSetListener() {
         @Override
@@ -66,17 +68,21 @@ public class AddRunActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_run);
 
         // Setup persistence classes
-        this.dbManager = new SQLiteDBManager(this);
-        RunDao runDao = new SQLiteRunDao(dbManager);
-        this.runService = new RunServiceImpl(runDao);
+        this.dbManager = new SQLiteDBManager(AddRunActivity.this);
+        RunPersistenceDao runPersistenceDao = new SQLiteRunPersistenceDao(dbManager);
+        this.runPersistenceService = new RunPersistenceServiceImpl(runPersistenceDao);
 
         // Open DB
         this.dbManager.open();
 
-        // Get Views
+        // Get views
         this.timeButton = findViewById(R.id.btn_time);
         this.distanceButton = findViewById(R.id.btn_distance);
         this.paceButton = findViewById(R.id.btn_pace);
+
+        EditText titleEditText = findViewById(R.id.input_title);
+        long count = runPersistenceService.getCount();
+        titleEditText.setText("Run " + ++count);
 
         // Set today's date on Date view
         this.dateView = findViewById(R.id.input_date);
@@ -116,7 +122,6 @@ public class AddRunActivity extends AppCompatActivity {
         // Submit button
         ExtendedFloatingActionButton floatingActionButton = findViewById(R.id.btn_submit_run);
         floatingActionButton.setOnClickListener(view -> {
-            EditText titleEditText = findViewById(R.id.input_title);
             EditText descriptionEditText = findViewById(R.id.input_description);
 
             // Save run to DB
@@ -128,23 +133,8 @@ public class AddRunActivity extends AppCompatActivity {
                     .setDistance(this.distance)
                     .setPace(this.pace)
                     .build();
-            runService.insert(runContext);
-
-            // Open new activity once run saved to DB
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            Toast.makeText(getApplicationContext(), "Saved run!", Toast.LENGTH_LONG).show();
-            startActivity(intent);
-            finish();
+            new PersistenceAsyncTask().execute(runContext);
         });
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        // Close DB
-        if (this.dbManager.isOpen()) {
-            this.dbManager.close();
-        }
     }
 
     private void showTime(Button button, int hourOfDay, int minute, int seconds) {
@@ -185,6 +175,44 @@ public class AddRunActivity extends AppCompatActivity {
         alertDialog.setMessage("The following mandatory fields are empty:\n" + emptyFields);
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", (dialog, which) -> dialog.dismiss());
         alertDialog.show();
+    }
+
+    private class PersistenceAsyncTask extends AsyncTask<RunContext, String, String> {
+        private String resp;
+        private ProgressDialog progressDialog;
+
+        @Override
+        protected String doInBackground(RunContext... params) {
+            publishProgress("Saving...");
+            runPersistenceService.insert(params[0]);
+            return resp;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            this.progressDialog.dismiss();
+
+            // Close DB
+            if (dbManager.isOpen()) {
+                dbManager.close();
+            }
+
+            // Close activity once run saved to DB
+            Intent intent = new Intent(AddRunActivity.this, MainActivity.class);
+            Toast.makeText(getApplicationContext(), "Saved run!", Toast.LENGTH_SHORT).show();
+            startActivity(intent);
+            finish();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            this.progressDialog = ProgressDialog.show(AddRunActivity.this, "Saving", "Saving run...");
+        }
+
+        @Override
+        protected void onProgressUpdate(String... text) {
+
+        }
     }
 
 }

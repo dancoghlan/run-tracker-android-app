@@ -19,6 +19,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DISTANCE = "distance";
     public static final String PACE = "pace";
 
+    public static final String SUM_DISTANCE = "sum_distance";
+
     private static final String CREATE_TABLE =
             "create table " + TABLE_NAME +
             "("

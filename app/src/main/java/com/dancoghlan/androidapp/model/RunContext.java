@@ -1,30 +1,14 @@
 package com.dancoghlan.androidapp.model;
 
-import org.chalup.microorm.annotations.Column;
 import org.joda.time.LocalDate;
 
-import static com.dancoghlan.androidapp.database.DatabaseHelper.DATE;
-import static com.dancoghlan.androidapp.database.DatabaseHelper.DESCRIPTION;
-import static com.dancoghlan.androidapp.database.DatabaseHelper.DISTANCE;
-import static com.dancoghlan.androidapp.database.DatabaseHelper.PACE;
-import static com.dancoghlan.androidapp.database.DatabaseHelper.TIME;
-import static com.dancoghlan.androidapp.database.DatabaseHelper.TITLE;
-import static com.dancoghlan.androidapp.database.DatabaseHelper._ID;
-
 public class RunContext {
-    @Column(_ID)
     private final long id;
-    @Column(TITLE)
     private final String title;
-    @Column(DESCRIPTION)
     private final String description;
-    @Column(DATE)
     private final LocalDate date;
-    @Column(TIME)
     private final String time;
-    @Column(DISTANCE)
     private final double distance;
-    @Column(PACE)
     private final String pace;
 
     private RunContext(long id, String title, String description, LocalDate date, String time, double distance, String pace) {
