@@ -31,10 +31,12 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 
 import java.util.Calendar;
-import java.util.List;
+
+import static com.dancoghlan.androidapp.util.ProjectConstants.ERROR_EMPTY_FIELD;
 
 public class AddRunActivity extends AppCompatActivity {
     private RunPersistenceService runPersistenceService;
@@ -44,12 +46,13 @@ public class AddRunActivity extends AppCompatActivity {
     private int day, month, year, hourOfDay, minute, second;
     private LocalDate date;
     private String time, pace;
-    private double distance;
+    private Double distance;
 
     private MyTimePickerDialogWithSeconds.OnTimeSetListener timeSetListener = new MyTimePickerDialogWithSeconds.OnTimeSetListener() {
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minute, int seconds) {
             showTime(timeButton, hourOfDay, minute, seconds);
+            calculatePace();
         }
     };
 
@@ -93,7 +96,8 @@ public class AddRunActivity extends AppCompatActivity {
         showDate(this.year, this.month + 1, this.day);
 
         // Create dialog for distance value
-        distanceButton.setOnClickListener(view -> {
+        this.distanceButton.setOnClickListener(view -> {
+            this.distanceButton.setError(null);
             LayoutInflater layoutInflater = AddRunActivity.this.getLayoutInflater();
             View promptsView = layoutInflater.inflate(R.layout.alert_dialog, null);
             final EditText userInput = promptsView.findViewById(R.id.input_user_input);
@@ -107,6 +111,7 @@ public class AddRunActivity extends AppCompatActivity {
                                 if (StringUtils.isNotEmpty(input)) {
                                     this.distance = Double.parseDouble(input);
                                     this.distanceButton.setText(distance + "km");
+                                    calculatePace();
                                 }
                             }
                     )
@@ -115,25 +120,65 @@ public class AddRunActivity extends AppCompatActivity {
         });
 
         // Add on click listeners for buttons
-        this.timeButton.setOnClickListener(view -> new MyTimePickerDialogWithSeconds(view.getContext(), timeSetListener, hourOfDay, minute, second).show());
-        this.paceButton.setOnClickListener(view -> new MyTimePickerDialogNoSeconds(view.getContext(), paceSetListener, hourOfDay, minute).show());
-        this.dateView.setOnClickListener(view -> new DatePickerDialog(view.getContext(), myDateListener, year, month, day).show());
+        this.timeButton.setOnClickListener(view -> {
+            this.timeButton.setError(null);
+            new MyTimePickerDialogWithSeconds(view.getContext(), timeSetListener, hourOfDay, minute, second).show();
+            calculatePace();
+        });
+        this.paceButton.setOnClickListener(view -> {
+            this.paceButton.setError(null);
+            new MyTimePickerDialogNoSeconds(view.getContext(), paceSetListener, hourOfDay, minute).show();
+        });
+        this.dateView.setOnClickListener(view -> {
+            this.paceButton.setError(null);
+            new DatePickerDialog(view.getContext(), myDateListener, year, month, day).show();
+        });
 
         // Submit button
         ExtendedFloatingActionButton floatingActionButton = findViewById(R.id.btn_submit_run);
         floatingActionButton.setOnClickListener(view -> {
-            EditText descriptionEditText = findViewById(R.id.input_description);
 
-            // Save run to DB
-            RunContext runContext = new RunContext.Builder()
-                    .setTitle(titleEditText.getText().toString())
-                    .setDescription(descriptionEditText.getText().toString())
-                    .setDate(this.date)
-                    .setTime(this.time)
-                    .setDistance(this.distance)
-                    .setPace(this.pace)
-                    .build();
-            new PersistenceAsyncTask().execute(runContext);
+            // Check for empty fields
+            boolean emptyFields = false;
+
+            // Title
+            String title = titleEditText.getText().toString();
+            if (StringUtils.isEmpty(title)) {
+                emptyFields = true;
+                titleEditText.setError(ERROR_EMPTY_FIELD);
+            }
+            // Description
+            EditText descriptionEditText = findViewById(R.id.input_description);
+            String description = descriptionEditText.getText().toString();
+            // Date
+            if (this.date == null) {
+                emptyFields = true;
+                this.dateView.setError(ERROR_EMPTY_FIELD);
+            }
+            // Time
+            if (this.time == null) {
+                emptyFields = true;
+                this.timeButton.setError(ERROR_EMPTY_FIELD);
+            }
+            // Distance
+            if (this.distance == null) {
+                emptyFields = true;
+                this.distanceButton.setError(ERROR_EMPTY_FIELD);
+            }
+
+            if (!emptyFields) {
+                calculatePace();
+                // Save run to DB
+                RunContext runContext = new RunContext.Builder()
+                        .setTitle(title)
+                        .setDescription(description)
+                        .setDate(this.date)
+                        .setTime(this.time)
+                        .setDistance(this.distance)
+                        .setPace(this.pace)
+                        .build();
+                new PersistenceAsyncTask().execute(runContext);
+            }
         });
     }
 
@@ -169,12 +214,23 @@ public class AddRunActivity extends AppCompatActivity {
         dateView.setText(dateStr);
     }
 
-    private void alertEmptyFields(List<String> emptyFields) {
-        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-        alertDialog.setTitle("Empty Fields");
-        alertDialog.setMessage("The following mandatory fields are empty:\n" + emptyFields);
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", (dialog, which) -> dialog.dismiss());
-        alertDialog.show();
+    private void calculatePace() {
+        if (StringUtils.isNotEmpty(this.time) && this.distance != null) {
+            LocalTime localTime = LocalTime.parse(this.time);
+            localTime.getMillisOfDay();
+            int hours = localTime.getHourOfDay();
+            int mins = localTime.getMinuteOfHour();
+            int secs = localTime.getSecondOfMinute();
+
+            long totalSecs = (hours * 3600) + (mins * 60) + secs;
+            double div = totalSecs / this.distance;
+
+            int newMins = (int) (div % 3600) / 60;
+            int newSecs = (int) div % 60;
+
+            this.pace = String.format("%02d:%02d", newMins, newSecs);
+            this.paceButton.setText(this.pace.concat("/km"));
+        }
     }
 
     private class PersistenceAsyncTask extends AsyncTask<RunContext, String, String> {
@@ -201,7 +257,7 @@ public class AddRunActivity extends AppCompatActivity {
             Intent intent = new Intent(AddRunActivity.this, MainActivity.class);
             Toast.makeText(getApplicationContext(), "Saved run!", Toast.LENGTH_SHORT).show();
             startActivity(intent);
-            finish();
+            finishAffinity();
         }
 
         @Override

@@ -55,15 +55,14 @@ public class SQLiteRunPersistenceDao implements RunPersistenceDao {
     public List<RunContext> getAll() {
         checkDBOpen();
         Cursor cursor = getAllAsCursor();
+        List<RunContext> runContexts = new ArrayList<>();
         if (cursor != null && cursor.getCount() > 0) {
-            List<RunContext> runContexts = new ArrayList<>();
             for (int i = 0; i < cursor.getCount(); i++) {
                 cursor.moveToPosition(i);
                 runContexts.add(new RunContextMapper().map(cursor));
             }
-            return runContexts;
         }
-        return null;
+        return runContexts;
     }
 
     @Override
@@ -119,6 +118,22 @@ public class SQLiteRunPersistenceDao implements RunPersistenceDao {
     }
 
     @Override
+    public List<String> getTimes() {
+        checkDBOpen();
+        SQLiteDatabase database = this.dbManager.getDatabase();
+        String query = "SELECT " + TIME + " FROM " + TABLE_NAME;
+        Cursor cursor = database.rawQuery(query, null);
+        List<String> times = new ArrayList<>();
+        if (cursor != null && cursor.getCount() > 0) {
+            for (int i = 0; i < cursor.getCount(); i++) {
+                cursor.moveToPosition(i);
+                times.add(cursor.getString(0));
+            }
+        }
+        return times;
+    }
+
+    @Override
     public Double getSumDouble(String columnName) {
         checkDBOpen();
         SQLiteDatabase database = this.dbManager.getDatabase();
@@ -150,14 +165,16 @@ public class SQLiteRunPersistenceDao implements RunPersistenceDao {
     public void delete(long id) {
         checkDBOpen();
         SQLiteDatabase database = this.dbManager.getDatabase();
-        database.delete(TABLE_NAME, _ID + "=" + id, null);
+        String where = "_id = ?";
+        String[] whereArgs = { Long.toString(id) };
+        database.delete(TABLE_NAME, where, whereArgs);
+        dbManager.close();
     }
 
     @Override
     public void truncate() {
         checkDBOpen();
         SQLiteDatabase database = this.dbManager.getDatabase();
-        database.execSQL("DELETE FROM " + TABLE_NAME);
         database.delete(TABLE_NAME, null, null);
     }
 

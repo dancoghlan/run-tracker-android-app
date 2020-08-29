@@ -5,7 +5,15 @@ import android.database.Cursor;
 import com.dancoghlan.androidapp.database.dao.RunPersistenceDao;
 import com.dancoghlan.androidapp.model.RunContext;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.joda.time.Duration;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
+
 import java.util.List;
+
+import static com.dancoghlan.androidapp.database.DatabaseHelper.DISTANCE;
 
 public class RunPersistenceServiceImpl implements RunPersistenceService {
     private final RunPersistenceDao runPersistenceDao;
@@ -40,8 +48,28 @@ public class RunPersistenceServiceImpl implements RunPersistenceService {
     }
 
     @Override
-    public Double getSumDouble(String columnName) {
-        return runPersistenceDao.getSumDouble(columnName);
+    public Double getTotalDistance() {
+        return runPersistenceDao.getSumDouble(DISTANCE);
+    }
+
+    @Override
+    public Duration getTotalTime() {
+        List<String> times = runPersistenceDao.getTimes();
+        Duration totalDuration = new Duration(Duration.ZERO);
+        if (CollectionUtils.isNotEmpty(times)) {
+            for (String timeStr : times) {
+                PeriodFormatter periodFormatter = new PeriodFormatterBuilder()
+                        .appendHours()
+                        .appendSeparator(":")
+                        .appendMinutes()
+                        .appendSeparator(":")
+                        .appendSeconds()
+                        .toFormatter();
+                Period period = periodFormatter.parsePeriod(timeStr);
+                totalDuration = totalDuration.plus(period.toStandardDuration());
+            }
+        }
+        return totalDuration;
     }
 
     @Override

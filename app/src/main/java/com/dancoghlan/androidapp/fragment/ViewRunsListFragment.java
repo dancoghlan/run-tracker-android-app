@@ -16,14 +16,14 @@ import androidx.fragment.app.Fragment;
 import com.dancoghlan.androidapp.R;
 import com.dancoghlan.androidapp.activity.ViewRunActivity;
 import com.dancoghlan.androidapp.adapter.ViewRunsCursorAdaptor;
-import com.dancoghlan.androidapp.database.dao.RunPersistenceDao;
-import com.dancoghlan.androidapp.database.dao.SQLiteRunPersistenceDao;
 import com.dancoghlan.androidapp.database.DBManager;
 import com.dancoghlan.androidapp.database.SQLiteDBManager;
-import com.dancoghlan.androidapp.model.RunContext;
-import com.dancoghlan.androidapp.model.mapper.RunContextMapper;
+import com.dancoghlan.androidapp.database.dao.RunPersistenceDao;
+import com.dancoghlan.androidapp.database.dao.SQLiteRunPersistenceDao;
 import com.dancoghlan.androidapp.database.service.RunPersistenceService;
 import com.dancoghlan.androidapp.database.service.RunPersistenceServiceImpl;
+import com.dancoghlan.androidapp.model.RunContext;
+import com.dancoghlan.androidapp.model.mapper.RunContextMapper;
 import com.google.gson.Gson;
 
 import static com.dancoghlan.androidapp.database.DatabaseHelper.DATE;
@@ -34,10 +34,12 @@ import static com.dancoghlan.androidapp.database.DatabaseHelper.TITLE;
 import static com.dancoghlan.androidapp.database.DatabaseHelper._ID;
 import static com.dancoghlan.androidapp.util.ProjectConstants.RUN_KEY;
 
-public class ViewRunsFragment extends Fragment {
+public class ViewRunsListFragment extends Fragment {
     private SimpleCursorAdapter adapter;
     private ListView listView;
-    boolean runsLoaded;
+    private boolean runsLoaded;
+    private RunPersistenceService runPersistenceService;
+    private DBManager dbManager;
 
     private static String[] FROM = new String[]{_ID, TITLE, DATE, TIME, DISTANCE, PACE};
     private static final int[] TO = new int[]{R.id.list_id, R.id.list_title, R.id.list_date, R.id.list_time, R.id.list_distance, R.id.list_pace};
@@ -45,7 +47,7 @@ public class ViewRunsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_view_runs, container, false);
+        return inflater.inflate(R.layout.fragment_view_runs_list, container, false);
     }
 
     @Override
@@ -62,32 +64,17 @@ public class ViewRunsFragment extends Fragment {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser && !runsLoaded) {
-            new PersistenceAsyncTask().execute();
-            runsLoaded = true;
-        }
-    }
+            // Setup persistence classes
+            this.dbManager = new SQLiteDBManager(getContext());
+            RunPersistenceDao runPersistenceDao = new SQLiteRunPersistenceDao(dbManager);
+            this.runPersistenceService = new RunPersistenceServiceImpl(runPersistenceDao);
 
-    private class PersistenceAsyncTask extends AsyncTask<String, String, Cursor> {
-        private ProgressDialog progressDialog;
-        private RunPersistenceService runPersistenceService;
-        private DBManager dbManager;
-
-        @Override
-        protected Cursor doInBackground(String... params) {
-            publishProgress("Loading...");
-            return runPersistenceService.getAllAsCursor();
-        }
-
-        @Override
-        protected void onPostExecute(Cursor cursorResult) {
-            this.progressDialog.dismiss();
-
-            if (this.dbManager.isOpen()) {
-                this.dbManager.close();
-            }
+            // Open DB
+            this.dbManager.open();
 
             // Load runs from DB into listView
-            adapter = new ViewRunsCursorAdaptor(getContext(), R.layout.list_view_runs, cursorResult, FROM, TO, 0);
+            Cursor cursor = runPersistenceService.getAllAsCursor();
+            adapter = new ViewRunsCursorAdaptor(getContext(), R.layout.list_view_runs_item, cursor, FROM, TO, 0);
             adapter.notifyDataSetChanged();
             listView.setAdapter(adapter);
             listView.setOnItemClickListener((parent, v, position, id) -> {
@@ -101,19 +88,35 @@ public class ViewRunsFragment extends Fragment {
                     startActivity(intent);
                 }
             });
+            runsLoaded = true;
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        //this.dbManager.close();
+    }
+
+    private class PersistenceAsyncTask extends AsyncTask<String, String, Cursor> {
+        private ProgressDialog progressDialog;
+
+        @Override
+        protected Cursor doInBackground(String... params) {
+            publishProgress("Loading...");
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Cursor cursorResult) {
+            this.progressDialog.dismiss();
+
+
         }
 
         @Override
         protected void onPreExecute() {
             this.progressDialog = ProgressDialog.show(getContext(), "Loading", "Loading runs...");
-
-            // Setup persistence classes
-            this.dbManager = new SQLiteDBManager(getContext());
-            RunPersistenceDao runPersistenceDao = new SQLiteRunPersistenceDao(dbManager);
-            this.runPersistenceService = new RunPersistenceServiceImpl(runPersistenceDao);
-
-            // Open DB
-            this.dbManager.open();
         }
 
         @Override

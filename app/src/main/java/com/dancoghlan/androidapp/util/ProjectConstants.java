@@ -12,6 +12,7 @@ public class ProjectConstants {
     public static final String PACE = "pace";
 
     public static final String RUN_KEY = "RUN_KEY";
+    public static final String ERROR_EMPTY_FIELD = "This field cannot be blank";
 
     public static final List<String> MANDATORY_FIELDS = Arrays.asList(TITLE, DATE, TIME, DISTANCE, PACE);
 

@@ -20,13 +20,16 @@ import com.dancoghlan.androidapp.database.dao.RunPersistenceDao;
 import com.dancoghlan.androidapp.database.dao.SQLiteRunPersistenceDao;
 import com.dancoghlan.androidapp.database.service.RunPersistenceService;
 import com.dancoghlan.androidapp.database.service.RunPersistenceServiceImpl;
+import com.dancoghlan.androidapp.decorator.LinePagerIndicatorDecoration;
 import com.dancoghlan.androidapp.model.RunContext;
+import com.dancoghlan.androidapp.util.DateUtils;
 import com.google.gson.Gson;
+
+import org.joda.time.Duration;
 
 import java.text.DecimalFormat;
 import java.util.List;
 
-import static com.dancoghlan.androidapp.database.DatabaseHelper.DISTANCE;
 import static com.dancoghlan.androidapp.util.ProjectConstants.RUN_KEY;
 
 public class HomeFragment extends Fragment {
@@ -58,12 +61,21 @@ public class HomeFragment extends Fragment {
 
         // Set total distance
         TextView totalDistanceTextView = view.findViewById(R.id.view_total_distance);
-        Double totalDistance = runPersistenceService.getSumDouble(DISTANCE);
+        Double totalDistance = runPersistenceService.getTotalDistance();
         if (totalDistance != null) {
             DecimalFormat decimalFormat = new DecimalFormat("#.##");
             String totalDistanceValue = decimalFormat.format(totalDistance).concat("km");
             totalDistanceTextView.setText(totalDistanceValue);
         }
+
+        // Set total time
+        TextView totalTimeTextView = view.findViewById(R.id.view_total_time);
+        Duration totalTime = runPersistenceService.getTotalTime();
+        if (totalTime != null) {
+            String totalTimeStr = DateUtils.durationToString(totalTime);
+            totalTimeTextView.setText(totalTimeStr);
+        }
+
 
         // Get all runs from DB
         List<RunContext> runContexts = runPersistenceService.getAll();
@@ -72,6 +84,7 @@ public class HomeFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.rv_recent_runs);
         LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(horizontalLayoutManager);
+
         scrollableAdapter = new ScrollableRecyclerViewAdapter(getContext(), runContexts);
         scrollableAdapter.setClickListener((view1, position) -> {
             // Open new activity when item selected
@@ -81,12 +94,13 @@ public class HomeFragment extends Fragment {
             startActivity(intent);
         });
         recyclerView.setAdapter(scrollableAdapter);
+        recyclerView.addItemDecoration(new LinePagerIndicatorDecoration());
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        this.dbManager.close();
+        //this.dbManager.close();
     }
 
 }

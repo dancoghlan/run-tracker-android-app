@@ -7,9 +7,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingLeft="24dp"
-            android:paddingTop="20dp"
-            android:paddingRight="24dp">
+            android:padding="15dp">
 
         <LinearLayout
                 android:layout_width="match_parent"
@@ -22,99 +20,89 @@
                     android:id="@+id/btn_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
+                    android:layout_marginRight="5dp"
                     android:text="Time"
-                    android:textAllCaps="false"/>
+                    android:textAllCaps="false" />
 
             <Button
                     android:id="@+id/btn_distance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Distance"
-                    android:textAllCaps="false"/>
+                    android:textAllCaps="false" />
 
             <Button
                     android:id="@+id/btn_pace"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginLeft="5dp"
                     android:text="Pace"
-                    android:textAllCaps="false"/>
+                    android:textAllCaps="false" />
 
         </LinearLayout>
 
-        <!-- Title Label -->
+        <!-- Title -->
         <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:hint="Title">
 
-            <EditText
+            <requestFocus />
+
+            <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/input_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:background="@color/White"
-                    android:hint="Title"
-                    android:maxLength="20"
                     android:inputType="textCapSentences"
-                    android:text="My Run" />
+                    android:maxLength="20" />
+
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Description Label -->
+        <!-- Description -->
         <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="12dp"
+                android:hint="Description">
 
-            <EditText
+            <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/input_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/White"
-                    android:hint="Description"
                     android:inputType="textCapSentences"
-                    android:lines="4"
-                    android:singleLine="false" />
+                    android:maxLength="20" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Date Label -->
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <!-- Date -->
+        <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
-                android:layout_height="fill_parent"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:hint="Date">
 
-            <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/input_date_layout"
-                    android:layout_width="0dp"
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_date"
+                    android:layout_width="110dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="6dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_weight=".6">
-
-                <EditText
-                        android:id="@+id/input_date"
-                        android:layout_width="110dp"
-                        android:layout_height="wrap_content"
-                        android:background="@color/White"
-                        android:focusable="false"
-                        android:hint="Date"
-                        android:inputType="date" />
-            </com.google.android.material.textfield.TextInputLayout>
-        </LinearLayout>
+                    android:focusable="false"
+                    android:inputType="date" />
+        </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/btn_submit_run"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
             android:text="Submit"
             app:backgroundTint="@color/Orange"
-            app:icon="@drawable/icon_add_black"/>
+            app:icon="@drawable/icon_add_black" />
 
 </RelativeLayout>

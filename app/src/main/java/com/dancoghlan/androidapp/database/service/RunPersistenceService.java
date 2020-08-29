@@ -4,6 +4,8 @@ import android.database.Cursor;
 
 import com.dancoghlan.androidapp.model.RunContext;
 
+import org.joda.time.Duration;
+
 import java.util.List;
 
 public interface RunPersistenceService {
@@ -18,7 +20,9 @@ public interface RunPersistenceService {
 
     Cursor getLastCursor();
 
-    Double getSumDouble(String columnName);
+    Double getTotalDistance();
+
+    Duration getTotalTime();
 
     List<RunContext> getAll();
 

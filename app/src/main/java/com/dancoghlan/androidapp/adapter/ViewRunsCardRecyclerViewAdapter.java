@@ -1,13 +1,11 @@
 package com.dancoghlan.androidapp.adapter;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dancoghlan.androidapp.R;
@@ -20,29 +18,31 @@ import java.util.List;
 
 import static com.dancoghlan.androidapp.util.DateUtils.formatTime;
 
-/**
- * @See https://stackoverflow.com/questions/40584424/simple-android-recyclerview-example
- */
-public class ScrollableRecyclerViewAdapter extends RecyclerView.Adapter<ScrollableRecyclerViewAdapter.ViewHolder> {
-    private List<RunContext> mRunContexts;
-    private LayoutInflater mInflater;
-    private ItemClickListener mClickListener;
+public class ViewRunsCardRecyclerViewAdapter extends RecyclerView.Adapter<ViewRunsCardRecyclerViewAdapter.MyViewHolder> {
+    private List<RunContext> runContexts;
+    private ClickListener<RunContext> mClickListener;
 
-    public ScrollableRecyclerViewAdapter(Context context, List<RunContext> runContexts) {
-        this.mInflater = LayoutInflater.from(context);
-        this.mRunContexts = runContexts;
+    public ViewRunsCardRecyclerViewAdapter(List<RunContext> runContexts) {
+        this.runContexts = runContexts;
+    }
+
+    public interface ClickListener<T> {
+        void onItemClick(T data);
+    }
+
+    public void setOnItemClickListener(ClickListener<RunContext> clickListener) {
+        this.mClickListener = clickListener;
     }
 
     @Override
-    @NonNull
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.list_view_runs_item, parent, false);
-        return new ViewHolder(view);
+    public ViewRunsCardRecyclerViewAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_view_runs_item, parent, false);
+        return new MyViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        RunContext runContext = mRunContexts.get(position);
+    public void onBindViewHolder(ViewRunsCardRecyclerViewAdapter.MyViewHolder holder, final int position) {
+        final RunContext runContext = runContexts.get(position);
         setRunContextOnView(holder, runContext);
 
         if (position % 2 == 1) {
@@ -52,14 +52,12 @@ public class ScrollableRecyclerViewAdapter extends RecyclerView.Adapter<Scrollab
         }
     }
 
-    // total number of rows
     @Override
     public int getItemCount() {
-        return mRunContexts.size();
+        return runContexts.size();
     }
 
-    // stores and recycles views as they are scrolled off screen
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView titleView;
         TextView dateView;
         TextView distanceView;
@@ -67,7 +65,7 @@ public class ScrollableRecyclerViewAdapter extends RecyclerView.Adapter<Scrollab
         TextView timeView;
         ImageView imageView;
 
-        ViewHolder(View itemView) {
+        public MyViewHolder(View itemView) {
             super(itemView);
             titleView = itemView.findViewById(R.id.list_title);
             dateView = itemView.findViewById(R.id.list_date);
@@ -80,26 +78,11 @@ public class ScrollableRecyclerViewAdapter extends RecyclerView.Adapter<Scrollab
 
         @Override
         public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
+            if (mClickListener != null) mClickListener.onItemClick(runContexts.get(getAdapterPosition()));
         }
     }
 
-    // convenience method for getting data at click position
-    public RunContext getItem(int id) {
-        return mRunContexts.get(id);
-    }
-
-    // allows clicks events to be caught
-    public void setClickListener(ItemClickListener itemClickListener) {
-        this.mClickListener = itemClickListener;
-    }
-
-    // parent activity will implement this method to respond to click events
-    public interface ItemClickListener {
-        void onItemClick(View view, int position);
-    }
-
-    private void setRunContextOnView(ViewHolder viewHolder, RunContext runContext) {
+    private void setRunContextOnView(ViewRunsCardRecyclerViewAdapter.MyViewHolder viewHolder, RunContext runContext) {
 
         // Set Title
         TextView titleTextView = viewHolder.titleView;

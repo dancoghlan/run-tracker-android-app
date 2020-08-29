@@ -18,6 +18,8 @@ public interface RunPersistenceDao {
 
     Cursor getLastCursor();
 
+    List<String> getTimes();
+
     Double getSumDouble(String columnName);
 
     List<RunContext> getAll();

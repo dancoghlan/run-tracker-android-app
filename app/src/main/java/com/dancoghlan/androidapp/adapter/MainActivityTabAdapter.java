@@ -8,7 +8,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.dancoghlan.androidapp.fragment.HomeFragment;
 import com.dancoghlan.androidapp.fragment.StatisticsFragment;
-import com.dancoghlan.androidapp.fragment.ViewRunsFragment;
+import com.dancoghlan.androidapp.fragment.ViewRunsCardFragment;
 
 public class MainActivityTabAdapter extends FragmentPagerAdapter {
     private Context context;
@@ -27,7 +27,7 @@ public class MainActivityTabAdapter extends FragmentPagerAdapter {
                 HomeFragment homeFragment = new HomeFragment();
                 return homeFragment;
             case 1:
-                ViewRunsFragment viewRunsFragment = new ViewRunsFragment();
+                ViewRunsCardFragment viewRunsFragment = new ViewRunsCardFragment();
                 return viewRunsFragment;
             case 2:
                 StatisticsFragment statisticsFragment = new StatisticsFragment();
