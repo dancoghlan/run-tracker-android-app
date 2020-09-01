@@ -9,8 +9,10 @@ import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.dancoghlan.androidapp.R;
+import com.dancoghlan.androidapp.activity.MainActivity;
 import com.dancoghlan.androidapp.activity.ViewRunActivity;
 import com.dancoghlan.androidapp.adapter.ViewRunsCardRecyclerViewAdapter;
 import com.dancoghlan.androidapp.model.RunContext;
@@ -18,6 +20,7 @@ import com.dancoghlan.androidapp.util.RunContextObjectMapper;
 
 import java.util.List;
 
+import static androidx.core.app.ActivityCompat.finishAffinity;
 import static com.dancoghlan.androidapp.util.GeneralUtils.getRunContexts;
 import static com.dancoghlan.androidapp.util.ProjectConstants.RUN_CONTEXTS_KEY;
 import static com.dancoghlan.androidapp.util.ProjectConstants.RUN_KEY;
@@ -51,6 +54,19 @@ public class ViewRunsCardFragment extends Fragment {
             }
         });
         recyclerView.setAdapter(recyclerViewAdapter);
+
+        // Refresh on up-swipe
+        final SwipeRefreshLayout pullToRefresh = view.findViewById(R.id.pull_to_refresh_view_runs);
+        pullToRefresh.setOnRefreshListener(() -> {
+            refreshData(); // your code
+            pullToRefresh.setRefreshing(false);
+        });
+    }
+
+    private void refreshData() {
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        startActivity(intent);
+        finishAffinity(getActivity());
     }
 
 }

@@ -16,10 +16,8 @@ import com.dancoghlan.androidapp.rest.service.RunRestServiceImpl;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.web.client.ResourceAccessException;
 
-import java.util.Collections;
 import java.util.List;
 
 import static com.dancoghlan.androidapp.util.GeneralUtils.createConnectivityFailureDialog;
@@ -63,13 +61,13 @@ public class MainActivity extends AppCompatActivity {
             try {
                 return runRestService.getAll();
             } catch (ResourceAccessException e) {
-                return Collections.EMPTY_LIST;
+                return null;
             }
         }
 
         @Override
         protected void onPostExecute(List<RunContext> runContexts) {
-            if (CollectionUtils.isEmpty(runContexts)) {
+            if (runContexts == null) {
                 createConnectivityFailureDialog(MainActivity.this).show();
             }
             // Create tab layout

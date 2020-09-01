@@ -1,19 +1,24 @@
 package com.dancoghlan.androidapp.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.dancoghlan.androidapp.R;
+import com.dancoghlan.androidapp.activity.MainActivity;
 import com.dancoghlan.androidapp.adapter.ViewRunsGridCardRecyclerViewAdapter;
 import com.dancoghlan.androidapp.model.Pace;
 import com.dancoghlan.androidapp.model.RunContext;
 import com.dancoghlan.androidapp.model.Statistic;
+import com.dancoghlan.androidapp.rest.service.RunRestService;
 import com.dancoghlan.androidapp.util.DateUtils;
 
 import org.joda.time.Duration;
@@ -21,12 +26,14 @@ import org.joda.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+import static androidx.core.app.ActivityCompat.finishAffinity;
 import static com.dancoghlan.androidapp.util.GeneralUtils.calculatePace;
 import static com.dancoghlan.androidapp.util.GeneralUtils.getRunContexts;
 import static com.dancoghlan.androidapp.util.ProjectConstants.RUN_CONTEXTS_KEY;
 
 public class HomeFragment extends Fragment {
     private RecyclerView gridRecyclerView;
+    private RunRestService runRestService;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -51,6 +58,20 @@ public class HomeFragment extends Fragment {
         this.gridRecyclerView.setAdapter(gridCardRecyclerViewAdapter);
         GridLayoutManager manager = new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false);
         gridRecyclerView.setLayoutManager(manager);
+
+        // Refresh on up-swipe
+        final SwipeRefreshLayout pullToRefresh = view.findViewById(R.id.pull_to_refresh);
+        pullToRefresh.setOnRefreshListener(() -> {
+            refreshData(); // your code
+            pullToRefresh.setRefreshing(false);
+        });
+    }
+
+    private void refreshData() {
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        Toast.makeText(getContext(), "Refreshed!", Toast.LENGTH_SHORT).show();
+        startActivity(intent);
+        finishAffinity(getActivity());
     }
 
     private List<Statistic> getStatistics(List<RunContext> runContexts) {
