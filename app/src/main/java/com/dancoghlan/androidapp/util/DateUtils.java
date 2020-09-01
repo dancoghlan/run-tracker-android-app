@@ -19,17 +19,15 @@ public class DateUtils {
         return period.toStandardDuration();
     }
 
-    public static Duration createDuration(int hours, int mins, int secs) {
-        return Duration
-                .standardHours(hours)
-                .standardMinutes(mins)
-                .standardSeconds(secs);
-    }
-
-    public static Duration createDuration(int hours, int mins) {
-        return Duration
-                .standardHours(hours)
-                .standardMinutes(mins);
+    public static Duration timeToDuration(int hours, int mins, int secs) {
+        String time = new StringBuilder()
+                .append(hours)
+                .append(":")
+                .append(mins)
+                .append(":")
+                .append(secs)
+                .toString();
+        return timeToDuration(time);
     }
 
     public static String durationToString(Duration duration) {
@@ -37,11 +35,6 @@ public class DateUtils {
         long absSeconds = Math.abs(seconds);
         String positive = String.format("%dh %02dm", absSeconds / 3600, (absSeconds % 3600) / 60);
         return seconds < 0 ? "-" + positive : positive;
-    }
-
-    public static String formatTime(String time) {
-        Duration duration = timeToDuration(time);
-        return formatDuration(duration);
     }
 
     public static String formatDuration(Duration duration) {

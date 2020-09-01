@@ -16,8 +16,6 @@ import androidx.fragment.app.Fragment;
 import com.dancoghlan.androidapp.R;
 import com.dancoghlan.androidapp.activity.ViewRunActivity;
 import com.dancoghlan.androidapp.adapter.ViewRunsCursorAdaptor;
-import com.dancoghlan.androidapp.database.DBManager;
-import com.dancoghlan.androidapp.database.SQLiteDBManager;
 import com.dancoghlan.androidapp.database.dao.RunPersistenceDao;
 import com.dancoghlan.androidapp.database.dao.SQLiteRunPersistenceDao;
 import com.dancoghlan.androidapp.database.service.RunPersistenceService;
@@ -39,7 +37,6 @@ public class ViewRunsListFragment extends Fragment {
     private ListView listView;
     private boolean runsLoaded;
     private RunPersistenceService runPersistenceService;
-    private DBManager dbManager;
 
     private static String[] FROM = new String[]{_ID, TITLE, DATE, TIME, DISTANCE, PACE};
     private static final int[] TO = new int[]{R.id.list_id, R.id.list_title, R.id.list_date, R.id.list_time, R.id.list_distance, R.id.list_pace};
@@ -65,12 +62,11 @@ public class ViewRunsListFragment extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser && !runsLoaded) {
             // Setup persistence classes
-            this.dbManager = new SQLiteDBManager(getContext());
-            RunPersistenceDao runPersistenceDao = new SQLiteRunPersistenceDao(dbManager);
+            RunPersistenceDao runPersistenceDao = new SQLiteRunPersistenceDao(getContext());
             this.runPersistenceService = new RunPersistenceServiceImpl(runPersistenceDao);
 
             // Open DB
-            this.dbManager.open();
+//            this.dbManager.open();
 
             // Load runs from DB into listView
             Cursor cursor = runPersistenceService.getAllAsCursor();

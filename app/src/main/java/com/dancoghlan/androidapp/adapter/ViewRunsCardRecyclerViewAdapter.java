@@ -16,8 +16,6 @@ import org.joda.time.LocalDate;
 
 import java.util.List;
 
-import static com.dancoghlan.androidapp.util.DateUtils.formatTime;
-
 public class ViewRunsCardRecyclerViewAdapter extends RecyclerView.Adapter<ViewRunsCardRecyclerViewAdapter.MyViewHolder> {
     private List<RunContext> runContexts;
     private ClickListener<RunContext> mClickListener;
@@ -103,7 +101,7 @@ public class ViewRunsCardRecyclerViewAdapter extends RecyclerView.Adapter<ViewRu
 
         // Set Pace
         TextView paceTextView = viewHolder.paceView;
-        String pace = runContext.getPace();
+        String pace = runContext.getPace().toString();
         if (StringUtils.isNotEmpty(pace)) {
             String paceValue = pace.concat("/km");
             paceTextView.setText(paceValue);
@@ -111,7 +109,7 @@ public class ViewRunsCardRecyclerViewAdapter extends RecyclerView.Adapter<ViewRu
 
         // Set Time
         TextView timeTextView = viewHolder.timeView;
-        timeTextView.setText(formatTime(runContext.getTime()));
+        timeTextView.setText(runContext.getTimeAsString());
     }
 
 }

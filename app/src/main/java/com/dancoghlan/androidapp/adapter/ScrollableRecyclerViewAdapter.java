@@ -18,8 +18,6 @@ import org.joda.time.LocalDate;
 
 import java.util.List;
 
-import static com.dancoghlan.androidapp.util.DateUtils.formatTime;
-
 /**
  * @See https://stackoverflow.com/questions/40584424/simple-android-recyclerview-example
  */
@@ -120,7 +118,7 @@ public class ScrollableRecyclerViewAdapter extends RecyclerView.Adapter<Scrollab
 
         // Set Pace
         TextView paceTextView = viewHolder.paceView;
-        String pace = runContext.getPace();
+        String pace = runContext.getPace().toString();
         if (StringUtils.isNotEmpty(pace)) {
             String paceValue = pace.concat("/km");
             paceTextView.setText(paceValue);
@@ -128,7 +126,7 @@ public class ScrollableRecyclerViewAdapter extends RecyclerView.Adapter<Scrollab
 
         // Set Time
         TextView timeTextView = viewHolder.timeView;
-        timeTextView.setText(formatTime(runContext.getTime()));
+        timeTextView.setText(runContext.getTimeAsString());
     }
 
 }

@@ -1,9 +1,6 @@
 package com.dancoghlan.androidapp.fragment;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,22 +13,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.dancoghlan.androidapp.R;
 import com.dancoghlan.androidapp.activity.ViewRunActivity;
 import com.dancoghlan.androidapp.adapter.ViewRunsCardRecyclerViewAdapter;
-import com.dancoghlan.androidapp.database.DBManager;
-import com.dancoghlan.androidapp.database.SQLiteDBManager;
-import com.dancoghlan.androidapp.database.dao.RunPersistenceDao;
-import com.dancoghlan.androidapp.database.dao.SQLiteRunPersistenceDao;
-import com.dancoghlan.androidapp.database.service.RunPersistenceService;
-import com.dancoghlan.androidapp.database.service.RunPersistenceServiceImpl;
 import com.dancoghlan.androidapp.model.RunContext;
-import com.google.gson.Gson;
+import com.dancoghlan.androidapp.util.RunContextObjectMapper;
 
 import java.util.List;
 
+import static com.dancoghlan.androidapp.util.GeneralUtils.getRunContexts;
+import static com.dancoghlan.androidapp.util.ProjectConstants.RUN_CONTEXTS_KEY;
 import static com.dancoghlan.androidapp.util.ProjectConstants.RUN_KEY;
 
 public class ViewRunsCardFragment extends Fragment {
-    private RunPersistenceService runPersistenceService;
-    private DBManager dbManager;
     private RecyclerView recyclerView;
 
     @Override
@@ -42,19 +33,12 @@ public class ViewRunsCardFragment extends Fragment {
 
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
+        this.recyclerView = view.findViewById(R.id.recyclerView);
 
-        // Setup persistence classes
-        this.dbManager = new SQLiteDBManager(getContext());
-        RunPersistenceDao runPersistenceDao = new SQLiteRunPersistenceDao(dbManager);
-        this.runPersistenceService = new RunPersistenceServiceImpl(runPersistenceDao);
-
-        // Open DB
-        this.dbManager.open();
+        String runContextJson = getArguments().getString(RUN_CONTEXTS_KEY);
+        List<RunContext> runContexts = getRunContexts(runContextJson);
 
         // Load runs from DB into listView
-        List<RunContext> runContexts = runPersistenceService.getAll();
-
-        recyclerView = view.findViewById(R.id.recyclerView);
         ViewRunsCardRecyclerViewAdapter recyclerViewAdapter = new ViewRunsCardRecyclerViewAdapter(runContexts);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
@@ -62,44 +46,11 @@ public class ViewRunsCardFragment extends Fragment {
             if (runContext != null) {
                 // Open new activity when item selected
                 Intent intent = new Intent(getContext(), ViewRunActivity.class);
-                intent.putExtra(RUN_KEY, new Gson().toJson(runContext));
+                intent.putExtra(RUN_KEY, new RunContextObjectMapper().writeValueAsString(runContext));
                 startActivity(intent);
             }
         });
         recyclerView.setAdapter(recyclerViewAdapter);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        //this.dbManager.close();
-    }
-
-    private class PersistenceAsyncTask extends AsyncTask<String, String, Cursor> {
-        private ProgressDialog progressDialog;
-
-        @Override
-        protected Cursor doInBackground(String... params) {
-            publishProgress("Loading...");
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Cursor cursorResult) {
-            this.progressDialog.dismiss();
-
-
-        }
-
-        @Override
-        protected void onPreExecute() {
-            this.progressDialog = ProgressDialog.show(getContext(), "Loading", "Loading runs...");
-        }
-
-        @Override
-        protected void onProgressUpdate(String... text) {
-
-        }
     }
 
 }

@@ -11,6 +11,13 @@
             android:orientation="vertical">
 
         <TextView
+                android:id="@+id/view_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Id"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
                 android:id="@+id/view_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -61,7 +68,7 @@
             android:layout_alignParentBottom="true"
             android:layout_marginRight="20dp"
             android:layout_marginBottom="20dp"
-            app:backgroundTint="@color/Orange"
+            app:backgroundTint="@color/White"
             app:icon="@drawable/bin" />
 
 </RelativeLayout>

@@ -1,12 +1,15 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/White">
 
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:background="@color/White"
+            android:layout_margin="10dp"
             android:padding="15dp">
 
         <LinearLayout
@@ -21,23 +24,29 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
+                    android:drawableLeft="@drawable/clock_18dp_small"
                     android:text="Time"
-                    android:textAllCaps="false" />
+                    android:textAllCaps="false"
+                    android:textColor="@color/Black" />
 
             <Button
                     android:id="@+id/btn_distance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/distance_18dp_small"
                     android:text="Distance"
-                    android:textAllCaps="false" />
+                    android:textAllCaps="false"
+                    android:textColor="@color/Black" />
 
             <Button
                     android:id="@+id/btn_pace"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
+                    android:drawableLeft="@drawable/timer_18dp_small"
                     android:text="Pace"
-                    android:textAllCaps="false" />
+                    android:textAllCaps="false"
+                    android:textColor="@color/Black" />
 
         </LinearLayout>
 
@@ -77,6 +86,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Date -->
+
         <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
@@ -103,6 +113,6 @@
             android:layout_marginBottom="20dp"
             android:text="Submit"
             app:backgroundTint="@color/Orange"
-            app:icon="@drawable/icon_add_black" />
+            app:icon="@drawable/add_18dp" />
 
 </RelativeLayout>

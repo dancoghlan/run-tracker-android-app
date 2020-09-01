@@ -1,11 +1,13 @@
 package com.dancoghlan.androidapp.database.dao;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.dancoghlan.androidapp.database.DBManager;
+import com.dancoghlan.androidapp.database.SQLiteDBManager;
 import com.dancoghlan.androidapp.model.RunContext;
 import com.dancoghlan.androidapp.model.mapper.RunContextMapper;
 
@@ -25,8 +27,8 @@ import static com.dancoghlan.androidapp.database.DatabaseHelper._ID;
 public class SQLiteRunPersistenceDao implements RunPersistenceDao {
     private final DBManager dbManager;
 
-    public SQLiteRunPersistenceDao(DBManager dbManager) {
-        this.dbManager = dbManager;
+    public SQLiteRunPersistenceDao(Context context) {
+        this.dbManager = new SQLiteDBManager(context);
     }
 
     @Override
@@ -38,9 +40,9 @@ public class SQLiteRunPersistenceDao implements RunPersistenceDao {
         contentValue.put(TITLE, runContext.getTitle());
         contentValue.put(DESCRIPTION, runContext.getDescription());
         contentValue.put(DATE, runContext.getDate().toString());
-        contentValue.put(TIME, runContext.getTime());
+        contentValue.put(TIME, runContext.getTimeAsString());
         contentValue.put(DISTANCE, runContext.getDistance());
-        contentValue.put(PACE, runContext.getPace());
+        contentValue.put(PACE, runContext.getPace().toString());
         database.insert(TABLE_NAME, null, contentValue);
     }
 
@@ -156,7 +158,7 @@ public class SQLiteRunPersistenceDao implements RunPersistenceDao {
         contentValues.put(DATE, runContext.getDate().toString());
         contentValues.put(TIME, runContext.getTitle());
         contentValues.put(DISTANCE, runContext.getDistance());
-        contentValues.put(PACE, runContext.getPace());
+        contentValues.put(PACE, runContext.getPace().toString());
         int i = database.update(TABLE_NAME, contentValues, _ID + " = " + id, null);
         return i;
     }

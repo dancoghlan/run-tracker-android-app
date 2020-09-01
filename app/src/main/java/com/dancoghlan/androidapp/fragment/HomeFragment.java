@@ -1,106 +1,115 @@
 package com.dancoghlan.androidapp.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dancoghlan.androidapp.R;
-import com.dancoghlan.androidapp.activity.ViewRunActivity;
-import com.dancoghlan.androidapp.adapter.ScrollableRecyclerViewAdapter;
-import com.dancoghlan.androidapp.database.DBManager;
-import com.dancoghlan.androidapp.database.SQLiteDBManager;
-import com.dancoghlan.androidapp.database.dao.RunPersistenceDao;
-import com.dancoghlan.androidapp.database.dao.SQLiteRunPersistenceDao;
-import com.dancoghlan.androidapp.database.service.RunPersistenceService;
-import com.dancoghlan.androidapp.database.service.RunPersistenceServiceImpl;
-import com.dancoghlan.androidapp.decorator.LinePagerIndicatorDecoration;
+import com.dancoghlan.androidapp.adapter.ViewRunsGridCardRecyclerViewAdapter;
+import com.dancoghlan.androidapp.model.Pace;
 import com.dancoghlan.androidapp.model.RunContext;
+import com.dancoghlan.androidapp.model.Statistic;
 import com.dancoghlan.androidapp.util.DateUtils;
-import com.google.gson.Gson;
 
 import org.joda.time.Duration;
 
-import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
-import static com.dancoghlan.androidapp.util.ProjectConstants.RUN_KEY;
+import static com.dancoghlan.androidapp.util.GeneralUtils.calculatePace;
+import static com.dancoghlan.androidapp.util.GeneralUtils.getRunContexts;
+import static com.dancoghlan.androidapp.util.ProjectConstants.RUN_CONTEXTS_KEY;
 
 public class HomeFragment extends Fragment {
-    private RunPersistenceService runPersistenceService;
-    private DBManager dbManager;
-    private ScrollableRecyclerViewAdapter scrollableAdapter;
+    private RecyclerView gridRecyclerView;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
+        // Get runContexts from main activity
+        String runContextJson = getArguments().getString(RUN_CONTEXTS_KEY);
+        List<RunContext> runContexts = getRunContexts(runContextJson);
 
-        // Setup persistence classes
-        this.dbManager = new SQLiteDBManager(getContext());
-        RunPersistenceDao runPersistenceDao = new SQLiteRunPersistenceDao(dbManager);
-        this.runPersistenceService = new RunPersistenceServiceImpl(runPersistenceDao);
+        // Load statistics from runs
+        List<Statistic> statistics = getStatistics(runContexts);
 
-        // Open DB
-        this.dbManager.open();
+        // Add values to statistics gridView
+        this.gridRecyclerView = view.findViewById(R.id.recyclerView);
+        ViewRunsGridCardRecyclerViewAdapter gridCardRecyclerViewAdapter = new ViewRunsGridCardRecyclerViewAdapter(getContext(), statistics);
+        gridCardRecyclerViewAdapter.setClickListener((position) -> {
+            // Add onClick actions
+        });
+        this.gridRecyclerView.setAdapter(gridCardRecyclerViewAdapter);
+        GridLayoutManager manager = new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false);
+        gridRecyclerView.setLayoutManager(manager);
+    }
+
+    private List<Statistic> getStatistics(List<RunContext> runContexts) {
+        List<Statistic> statistics = new ArrayList<>();
 
         // Set total runs
-        long totalRuns = runPersistenceService.getCount();
-        TextView totalRunsTextView = view.findViewById(R.id.view_total_runs);
-        totalRunsTextView.setText(String.valueOf(totalRuns));
+        long totalRuns = getTotalRuns(runContexts);
+        Statistic totalRunsStatistic = new Statistic("Total Runs", String.valueOf(totalRuns), R.drawable.running_24dp);
+        statistics.add(totalRunsStatistic);
 
         // Set total distance
-        TextView totalDistanceTextView = view.findViewById(R.id.view_total_distance);
-        Double totalDistance = runPersistenceService.getTotalDistance();
+        Double totalDistance = getTotalDistance(runContexts);
         if (totalDistance != null) {
-            DecimalFormat decimalFormat = new DecimalFormat("#.##");
-            String totalDistanceValue = decimalFormat.format(totalDistance).concat("km");
-            totalDistanceTextView.setText(totalDistanceValue);
+            Statistic totalDistanceStatistic = new Statistic("Total Distance", String.valueOf(totalDistance).concat("km"), R.drawable.distance_24dp);
+            statistics.add(totalDistanceStatistic);
         }
 
         // Set total time
-        TextView totalTimeTextView = view.findViewById(R.id.view_total_time);
-        Duration totalTime = runPersistenceService.getTotalTime();
+        Duration totalTime = getTotalTime(runContexts);
         if (totalTime != null) {
             String totalTimeStr = DateUtils.durationToString(totalTime);
-            totalTimeTextView.setText(totalTimeStr);
+            Statistic totalTimeStatistic = new Statistic("Total Time", totalTimeStr, R.drawable.clock_24dp);
+            statistics.add(totalTimeStatistic);
         }
 
+        // Set average pace
+        Pace averagePace = calculatePace(totalTime, totalDistance);
+        if (averagePace != null) {
+            Statistic averagePaceStatistic = new Statistic("Average Pace", averagePace.toString().concat("/km"), R.drawable.timer_24dp);
+            statistics.add(averagePaceStatistic);
+        }
 
-        // Get all runs from DB
-        List<RunContext> runContexts = runPersistenceService.getAll();
-
-        // Load runs into scrollable list
-        RecyclerView recyclerView = view.findViewById(R.id.rv_recent_runs);
-        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        recyclerView.setLayoutManager(horizontalLayoutManager);
-
-        scrollableAdapter = new ScrollableRecyclerViewAdapter(getContext(), runContexts);
-        scrollableAdapter.setClickListener((view1, position) -> {
-            // Open new activity when item selected
-            RunContext runContext = scrollableAdapter.getItem(position);
-            Intent intent = new Intent(getContext(), ViewRunActivity.class);
-            intent.putExtra(RUN_KEY, new Gson().toJson(runContext));
-            startActivity(intent);
-        });
-        recyclerView.setAdapter(scrollableAdapter);
-        recyclerView.addItemDecoration(new LinePagerIndicatorDecoration());
+        return statistics;
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        //this.dbManager.close();
+    private Double getTotalDistance(List<RunContext> runContexts) {
+        double totalValue = 0;
+        for (RunContext runContext : runContexts) {
+            Double distance = runContext.getDistance();
+            if (distance != null && distance > 0) {
+                totalValue += distance;
+            }
+        }
+        return totalValue;
+    }
+
+    private Duration getTotalTime(List<RunContext> runContexts) {
+        Duration totalDuration = new Duration(Duration.ZERO);
+        for (RunContext runContext : runContexts) {
+            Duration time = runContext.getTime();
+            if (time != null) {
+                totalDuration = totalDuration.plus(time);
+            }
+        }
+        return totalDuration;
+    }
+
+    private int getTotalRuns(List<RunContext> runContexts) {
+        return runContexts.size();
     }
 
 }
