@@ -13,7 +13,7 @@ import com.dancoghlan.androidapp.adapter.MainActivityTabAdapter;
 import com.dancoghlan.androidapp.model.RunContext;
 import com.dancoghlan.androidapp.rest.service.RunRestService;
 import com.dancoghlan.androidapp.rest.service.RunRestServiceImpl;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
 import org.springframework.web.client.ResourceAccessException;
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         loadRuns();
 
         // Floating button to create new run
-        FloatingActionButton floatingActionButton = findViewById(R.id.btn_add_new_run);
+        ExtendedFloatingActionButton floatingActionButton = findViewById(R.id.btn_add_new_run);
         floatingActionButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, AddRunActivity.class);
             startActivity(intent);

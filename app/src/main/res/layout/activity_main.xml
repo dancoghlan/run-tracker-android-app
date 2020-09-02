@@ -7,9 +7,9 @@
     <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
             app:tabBackground="@color/Orange"
-            app:tabTextColor="@color/Black"
-            app:tabSelectedTextColor="@color/WhiteSmoke"
-            app:tabIndicatorColor="@color/WhiteSmoke"
+            app:tabTextColor="@color/White"
+            app:tabSelectedTextColor="@color/Black"
+            app:tabIndicatorColor="@color/Black"
             app:tabIconTint="@drawable/tab_icon_selector"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/tabLayout" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/btn_add_new_run"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -51,6 +51,7 @@
             android:layout_marginRight="20dp"
             app:backgroundTint="@color/Orange"
             app:fabSize="normal"
-            app:srcCompat="@drawable/add_18dp"/>
+            android:text="Add Run"
+            app:icon="@drawable/add_18dp"/>
 
 </RelativeLayout>

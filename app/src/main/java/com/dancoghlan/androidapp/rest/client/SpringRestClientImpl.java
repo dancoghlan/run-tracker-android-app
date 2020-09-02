@@ -24,7 +24,7 @@ public class SpringRestClientImpl implements RestClient {
     public SpringRestClientImpl() {
         this.restTemplate = new RestTemplate(true);
         SimpleClientHttpRequestFactory factory = (SimpleClientHttpRequestFactory) restTemplate.getRequestFactory();
-        int connectionTimeoutSeconds = 10;
+        int connectionTimeoutSeconds = 3;
         factory.setConnectTimeout(connectionTimeoutSeconds * 1000);
         factory.setReadTimeout(connectionTimeoutSeconds * 1000);
         this.uriComponentsBuilder = UriComponentsBuilder.newInstance()

@@ -5,9 +5,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        app:strokeColor="@color/Gray"
-        app:strokeWidth="2dp"
-        app:cardCornerRadius="10dp"
+        app:cardCornerRadius="3dp"
         app:cardElevation="8dp">
 
     <LinearLayout
@@ -35,8 +33,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="5dp"
                     android:text="Label"
                     android:textColor="@color/Black"
+                    android:textStyle="bold"
                     android:textSize="15dp" />
 
             <View
@@ -54,8 +54,7 @@
                     android:layout_gravity="center_horizontal"
                     android:text="value"
                     android:textColor="@color/Black"
-                    android:textSize="25dp"
-                    android:textStyle="bold" />
+                    android:textSize="25dp" />
 
         </LinearLayout>
 

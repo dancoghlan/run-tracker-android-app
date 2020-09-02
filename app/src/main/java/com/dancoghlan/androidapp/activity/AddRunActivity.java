@@ -25,7 +25,6 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Duration;
 import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormat;
 import org.springframework.web.client.ResourceAccessException;
 
 import java.util.Calendar;
@@ -180,7 +179,7 @@ public class AddRunActivity extends AppCompatActivity {
                 .append("/")
                 .append(year)
                 .toString();
-        this.date = LocalDate.parse(dateStr, DateTimeFormat.forPattern("dd/MM/yyyy"));
+        this.date = new LocalDate(year, month, day);
         this.dateView.setText(dateStr);
     }
 

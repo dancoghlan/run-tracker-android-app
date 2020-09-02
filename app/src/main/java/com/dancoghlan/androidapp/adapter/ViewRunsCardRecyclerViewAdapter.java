@@ -44,9 +44,9 @@ public class ViewRunsCardRecyclerViewAdapter extends RecyclerView.Adapter<ViewRu
         setRunContextOnView(holder, runContext);
 
         if (position % 2 == 1) {
-            holder.imageView.setImageResource(R.drawable.heart);
+            holder.imageView.setImageResource(R.drawable.run_circle_24dp);
         } else {
-            holder.imageView.setImageResource(R.drawable.heart2);
+            holder.imageView.setImageResource(R.drawable.run_circle_black_48dp);
         }
     }
 
@@ -88,8 +88,7 @@ public class ViewRunsCardRecyclerViewAdapter extends RecyclerView.Adapter<ViewRu
 
         // Set Date
         TextView dateTextView = viewHolder.dateView;
-        // TODO: LocalDate date = lastRun.getDate();
-        LocalDate date = LocalDate.now();
+        LocalDate date = runContext.getDate();
         if (date != null) {
             dateTextView.setText(date.toString("dd MMMM, yyyy"));
         }

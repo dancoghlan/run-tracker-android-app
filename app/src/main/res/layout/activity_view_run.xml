@@ -68,7 +68,7 @@
             android:layout_alignParentBottom="true"
             android:layout_marginRight="20dp"
             android:layout_marginBottom="20dp"
-            app:backgroundTint="@color/White"
+            app:backgroundTint="@color/Orange"
             app:icon="@drawable/bin" />
 
 </RelativeLayout>

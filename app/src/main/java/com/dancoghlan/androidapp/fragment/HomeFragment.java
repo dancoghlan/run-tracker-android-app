@@ -18,7 +18,6 @@ import com.dancoghlan.androidapp.adapter.ViewRunsGridCardRecyclerViewAdapter;
 import com.dancoghlan.androidapp.model.Pace;
 import com.dancoghlan.androidapp.model.RunContext;
 import com.dancoghlan.androidapp.model.Statistic;
-import com.dancoghlan.androidapp.rest.service.RunRestService;
 import com.dancoghlan.androidapp.util.DateUtils;
 
 import org.joda.time.Duration;
@@ -33,7 +32,6 @@ import static com.dancoghlan.androidapp.util.ProjectConstants.RUN_CONTEXTS_KEY;
 
 public class HomeFragment extends Fragment {
     private RecyclerView gridRecyclerView;
-    private RunRestService runRestService;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -62,7 +60,7 @@ public class HomeFragment extends Fragment {
         // Refresh on up-swipe
         final SwipeRefreshLayout pullToRefresh = view.findViewById(R.id.pull_to_refresh);
         pullToRefresh.setOnRefreshListener(() -> {
-            refreshData(); // your code
+            refreshData();
             pullToRefresh.setRefreshing(false);
         });
     }
